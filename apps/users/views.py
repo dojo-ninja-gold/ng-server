@@ -25,4 +25,15 @@ def create(req):
     return HttpResponse(json_user, status=200, content_type="application/json")
 
 def login(req):
-    pass
+    post_data = json.loads(req.body.decode())
+    valid, result = User.objects.login(post_data)
+    if not valid:
+        json_errors = json.dumps(result)
+        return HttpResponse(json_errors, status=400, content_type="application/json")
+    user = {
+        'first_name': result.first_name,
+        'id': result.id,
+        'gold': result.gold
+    }
+    json_user = json.dumps(user)
+    return HttpResponse(json_user, status=200, content_type='application/json')
