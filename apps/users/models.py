@@ -1,5 +1,6 @@
 from django.db import models
 import re
+import bcrypt
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 # Create your models here.
@@ -16,10 +17,23 @@ class UserManager(models.Manager):
             errors.append('Password must be at least 2 characters long')
         return errors
 
+    def easy_create(self, data):
+        # hash password
+        hashed_pw = bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt())
+        print(hashed_pw)
+        # create and return user
+        return User.objects.create(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            email=data['email'],
+            pw_hash=hashed_pw.decode()
+        )
+
 class User(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
+    gold = models.IntegerField(default=0)
     pw_hash = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

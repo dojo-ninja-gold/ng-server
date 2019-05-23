@@ -1,6 +1,7 @@
 from django.shortcuts import HttpResponse
 from .models import User
 from django.core import serializers
+import json
 # Create your views here.
 def show(req, user_id):
     user = User.objects.filter(id=user_id)
@@ -8,7 +9,20 @@ def show(req, user_id):
     return HttpResponse(json_user, status=200, content_type='application/json')
 
 def create(req):
-    pass
+    post_data = json.loads(req.body.decode())
+    errors = User.objects.validate(post_data)
+    if errors:
+        return HttpResponse(json.dumps(errors), status=400, content_type='application/json')
+    
+    # create a user, return user info as json
+    entire_user = User.objects.easy_create(post_data)
+    user = {
+        'first_name': entire_user.first_name,
+        'id': entire_user.id,
+        'gold': entire_user.gold
+    }
+    json_user = json.dumps(user)
+    return HttpResponse(json_user, status=200, content_type="application/json")
 
 def login(req):
     pass
