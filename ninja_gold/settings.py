@@ -29,7 +29,8 @@ ALLOWED_HOSTS = []
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:4200",
-    "http://127.0.0.1:4200"
+    "http://127.0.0.1:4200",
+    "https://dojo-ninja-gold.github.io/ng-client/"
 ]
 
 # Application definition
